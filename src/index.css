@@ -9,9 +9,6 @@ body {
 h1, h2, p, ul, li {
   font-family: sans-serif;
 }
-img {
-  border-radius: 25px;
-}
 ul.header li {
   display: inline;
   list-style-type: none;

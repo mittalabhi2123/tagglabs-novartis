@@ -10,44 +10,19 @@ export default class Homepage extends React.Component {
     super(props);
 
     this.state = {
-      activeTab: '1',
       name: '',
-      email: '',
-      phone: '',
-      company: '',
-      url: '',
-      id: '',
       screenshot: '',
     };
   }
 
-  updateState = (element, image, externalId) => {
-    console.log(element.Name.S + " " + element.Email.S + " " + element.ContactNumber.S + " " + element.Company.S);
-    if (this.state.email === element.Email.S) {
-      console.log("Same User found. Not updating the details:" + this.state.email);
-      return;
-    }
+  updateState = (personName, image, externalId) => {
     this.setState({
-      name: element.Name.S,
-      email: element.Email.S,
-      phone: element.ContactNumber.S,
-      company: element.Company.S,
+      name: personName,
       screenshot: image,
-      client: element.Client.S,
-      imageFile: element.ImageFile.S,
-      url: getImageUrl(element.Client.S, element.ImageFile.S),
-      id: externalId,
     });
   }
 
-  stats = () => {
-    fetchDistinctClients((clientIdSet) => this.setState({
-      clientIds: clientIdSet
-    }));
-  }
-
   render() {
-
     const smile = (
       <div>
         <Label style={{color:"#ec9a1e", fontSize:"-webkit-xxx-large", marginTop:"25%"}}>Smile </Label>
@@ -83,7 +58,7 @@ export default class Homepage extends React.Component {
         <Row>
           <Col xs="1"/>
           <Col xs="4">
-            <Card style={{marginTop:"5%", marginLeft:"6%", width:"402px", borderRadius:"0px"}}>
+            <Card style={{marginTop:"5%", marginLeft:"6%", width:"402px"}}>
                 <CapturePicture className={styles.imageCard} updateState={this.updateState} dataLoaded={this.state.name} />
             </Card>
           </Col>

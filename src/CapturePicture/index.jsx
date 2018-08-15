@@ -3,7 +3,6 @@ import React, { Component, Fragment } from 'react';
 import { Card, CardImg } from 'reactstrap';
 import Webcam from '../Webcam';
 import PropTypes from 'prop-types';
-import frame from '../assets/frame.png';
 
 
 const propTypes = {
@@ -18,6 +17,7 @@ export default class CapturePicture extends Component {
     this.state = {
       screenshot: null,
       foundImageMatch: false,
+      retry: 0,
     };
   }
 
@@ -39,6 +39,15 @@ export default class CapturePicture extends Component {
     if (screenshot === null) {
       return;
     }
+    if (this.state.retry === 5) {
+      this.stopTimer();
+      this.props.updateState('   ', screenshot, 'testExternalId');
+      return;
+    } else {
+      this.setState(prevState => ({
+        retry: prevState.retry + 1,
+      }));
+    }
     initAWS();
     fetchUserDataByImage(screenshot, this.props.updateState, this.stopTimer);
     this.setState({ screenshot });
@@ -47,21 +56,31 @@ export default class CapturePicture extends Component {
   startTimer = () => {
     console.log("Timer started....");
     clearInterval(this.timer)
-    this.timer = setInterval(this.handleClick, 3000)
+    this.timer = setInterval(this.handleClick, 2000)
   }
 
   render() {
-    const { dataLoaded } = this.props;
+    const { dataLoaded, updateState } = this.props;
+    if (dataLoaded) {
+      this.stopTimer();
+      setTimeout(() => {
+        updateState('', '', '');
+        this.setState({
+          retry: 0,
+        });
+        this.startTimer();
+      }, 5000);
+    }
+    const camera = (<Webcam
+      style={{objectFit:"fill", backgroundImage:"../assets/frame.png"}}
+      audio={false}
+      dataLoaded={dataLoaded}
+      ref={node => this.webcam = node}
+    />);
+    const picture = (<img width="400px" height="450px" src={this.state.screenshot} alt=""/>)
     return (
       <Fragment>
-        <Webcam
-          style={{objectFit:"fill", backgroundImage:"../assets/frame.png"}}
-          audio={false}
-          dataLoaded={dataLoaded}
-          ref={node => this.webcam = node}
-        >
-          <img src={frame} />
-        </Webcam>
+        {dataLoaded ? picture : camera}
       </Fragment>
     );
   }

@@ -21,7 +21,6 @@ export const getImageUrl = (clientName, fileName) => {
   var s3 = new AWS.S3();
   var params = {Bucket: 'tagglabs-processed', Key: clientName + '/' + fileName, Expires: 600};
   var url = s3.getSignedUrl('getObject', params);
-  console.log("get URL is:", url);
   if (url.endsWith(".com/")) {
     url = url + 'tagglabs-processed/' + clientName + '/' + fileName;
   }
@@ -70,7 +69,6 @@ export const fetchLoggedInData = (client, updateState) => {
         ":clientName": {'S': client}
     }
   };
-  console.log(JSON.stringify(params));
   ddb.scan(params, function(err, data) {
     if (err) {
       console.log("Error", err);
@@ -126,7 +124,6 @@ export const fetchUserDataByImage = (webcamImage, updateState, stopTimer) => {
         return;
       }
       var externalId = data.FaceMatches[0].Face.ExternalImageId;
-      console.log('externalImageId======>>>' + externalId);
       var params = {
         ExpressionAttributeValues: {
           ':userId': {S: externalId}
@@ -139,7 +136,7 @@ export const fetchUserDataByImage = (webcamImage, updateState, stopTimer) => {
           console.log("Error", err);
         } else {
           data.Items.forEach(function(element, index, array) {
-            updateState(element, webcamImage, externalId);
+            updateState(element.Name.S, webcamImage, externalId);
           });
         }
       });

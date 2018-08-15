@@ -218,8 +218,6 @@ class Webcam extends Component {
     }
     try {
       const src = window.URL.createObjectURL(stream);
-      console.log('src', src);
-      console.log('stream', stream);
       this.stream = stream;
       this.setState({
         hasUserMedia: true,
